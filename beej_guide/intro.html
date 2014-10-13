@@ -1,0 +1,312 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Intro</title>
+<link rel="stylesheet" href="bgnet.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff">
+<table width="100%" border="0" cellspacing="0"cellpadding="0" class="navtable">
+<tr>
+<td align="left"><a href="index.html">&lt;&lt;&nbsp;Пред</a></td>
+<td align="center"><a href="index.html">Руководство Beej'a по Программированию Сетей</a></td><td align="right"><a href="theory.html">След&nbsp;&gt;&gt;</a></td>
+</tr></table>
+
+
+<h2 class="sect1title">1. <a name="intro">Intro</a></h2><hr class="mainsecthr"/>
+
+
+<p>Привет!  Программирование соектов утомило тебя? Эту тему тяжеловато 
+понять, читая только страницы <b class="com">man</b>? Ты хочешь научиться 
+клёвому сетевому программированию, но у тебя нет времени, чтобы разбираться 
+в куче <nobr><tt class="type">struct</tt></nobr>ов, пытаясь понять, 
+необходимо ли тебе вызвать <b><tt class="func">bind()</tt></b>,  перед 
+<b><tt class="func">connect()</tt></b>, и прочая, и прочая...</p>
+
+<p>Только представь себе, я уже проделал всю эту занудную работу и сейчас 
+я умираю от желания поделиться этой информацией со всеми. Ты обратился в 
+правильное место. Этот документ должен дать средней руки C-программисту 
+минимум, необходимый, чтобы разобраться в сетях.</p>
+
+<p>А ещё прикинь, я позаботился о будущем и уже обновил этот гайд для IPv6!  Приятного чтения!</p>
+
+
+
+
+
+
+<h3 class="sect2title">1.1. <a name="audience">К читателю</a></h3>
+
+
+<p>Этот документ был написан как руководство, а не как полная документация. 
+Скорее всего, идеально он подходит для прочтения людям, кто только начинает 
+заниматься программированием с использованием сокетов и ищет, 
+с чего начать. Ещё раз, это, определённо, не <i>полное и абсолютное</i> руководство 
+по программированию на сокетах, что бы это ни значило.</p>
+
+<p>Тем не менее, я надеюсь, этого будет достаточно, чтобы начать делать что-то осмысленное... <tt>:-)</tt></p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.2. <a name="platform">Платформа и компилятор</a></h3>
+
+
+<p>Код, содержащийся в документе, был откомпилирован на компьютере с Linux, 
+используя компилятор <a name="indexId434909-2"></a><b class="com">gcc</b> от GNU. Тем не менее, 
+он должен собираться на любой платформе, под которую доступен <b class="com">gcc</b>. Это не всегда правда, 
+если вы программируете под Windows - смотри <a href="intro.html#windows">секцию о программировании под Windows</a>, ниже.</p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.3. <a name="homepage">Официальный сайт и книги на продажу</a></h3>
+
+
+<p>Официальное расположение это документа это <tt class="tt"><a href="http://beej.us/guide/bgnet/" target="_blank">http://beej.us/guide/bgnet/</a></tt>. Там ты 
+найдёшь код из примеров и другие переводы этого руководства</p>
+
+<p>Чтобы купить красиво оформленную печатную копию (некоторые называют их "книги"), посети
+<tt class="tt"><a href="http://beej.us/guide/url/bgbuy" target="_blank">http://beej.us/guide/url/bgbuy</a></tt>.  Я очень ценю такие покупки, 
+потому что это помогает поддерживать мой писательский стиль жизни!</p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.4. <a name="solaris">Nota bene для Solaris/SunOS - программистов</a></h3>
+
+
+<p>Компилируя под <a name="indexId434909-3"></a>Solaris или <a name="indexId434909-4"></a>SunOS, нужно указать несколько дополнительных флагов, чтобы 
+слинковаться с правильными библиотеками. Чтобы сделать это, просто добавь 
+"<tt class="tt"><nobr>-lnsl</nobr> <nobr>-lsocket</nobr> <nobr>-lresolv</nobr></tt>" в конец команды компиляции, например так:</p>
+
+<pre class="screen">$ cc -o server server.c -lnsl -lsocket -lresolv</pre>
+
+
+<p>Если ты всё ещё получаешь сообщения об ошибке, попробуй добавить также "<tt class="tt">-lxnet</tt>" 
+в конец командной строки. Без понятия, что это изменит, но некоторым людям, говорят, помогает.</p>
+
+<p>Ещё одно место, где могут возникнуть проблемы это вызов 
+<b><tt class="func">setsockopt()</tt></b>.  Сигнатура функции отличается от той, что используется у меня на Linux, поэтому вместо:</p>
+
+<pre class="code">int yes=1;</pre>
+
+
+<p>введи:</p>
+
+<pre class="code">char yes='1';</pre>
+
+
+<p>Поскольку у меня нет компьютера Sun, я не тестировал ничего из вышеперечисленного - всё это сообщили мне люди по e-mail.</p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.5. <a name="windows">Nota bene для Windows - программистов</a></h3>
+
+
+<p>В этом месте руководства, я, исторически, занимаюсь критикой <a name="indexId434909-5"></a>Windows, 
+просто потому, что мне она мне не очень нравится. Тем не менее, стоит признаться, что Windows имеет большую базу пользователей, 
+и это вполне нормальная операционная система</p>
+
+<p>Говорят, разлука укрепляет чувства, и в этом случае, я уверен, что это так. (Или, возможно, это просто возраст.) 
+Но что я могу сказать с уверенностью, так это то, что, после более чем десятилетия 
+не-использования операционных систем от Microsoft в моей работе, я гораздо более счастлив! 
+Поэтому, я могу откинуться на стуле и уверенно сказать "Можете без страха использовать Windows"
+ ...Ну ладно, я говорю это стиснув, зубы.</p>
+
+<p>Так что, я всё ещё призываю вас попробовать <a name="indexId434909-6"></a><a href="http://www.linux.com/" target="_blank">Linux</a>, <a href="http://www.bsd.org/" target="_blank">BSD</a>, или
+какую-то другую Unix-подобную систему вместо Windows.</p>
+
+<p>Но люди любят то, что они любят, и я прекрасно понимаю, что вам, виндузятникам, было бы приятно знать, 
+что вся эта информация подходит и вам, с небольшими изменениями.</p>
+
+<p>Одна полезная вещь, которую вы можете сделать, это установить <a name="indexId434909-7"></a><a href="http://www.cygwin.com/" target="_blank">Cygwin</a>, коллекцию инструментов Unix
+под Windows.  Я слышал, что если делать так, то всё будет работать даже без изменений.</p>
+
+<p>Но если некоторые из вас хотят сделать всё в чистом Windows - стиле... Что ж, это весьма самоотверженно,
+ и вот что вам следует сделать: бежать и срочно устанавливать Unix! Да ладно, я просто шучу. 
+Сейчас я пытаюсь быть гораздо более дружелюбным к Windows...</p>
+
+<p>Вот что вам следует сделать (конечно, если вы не установили <a href="http://www.cygwin.com/" target="_blank">Cygwin</a>!): во первых, игнорируйте почти все
+ заголовочные файлы, что я здесь упомянул.  Всё, что вам необходимо проинклюдить, это:</p>
+
+<pre class="code"><a name="indexId434909-8"></a>#include &lt;winsock.h&gt;</pre>
+
+
+<p>Стоп!  Также, вам необходимо вызвать <a name="indexId434909-9"></a><b><tt class="func">WSAStartup()</tt></b> перед тем как делать что-либо с библиотекой сокетов.
+Код, выполняющий это, выглядит примерно так:</p>
+
+<pre class="code">#include &lt;winsock.h&gt;
+
+{
+    WSADATA wsaData;   // if this doesn't work
+    //WSAData wsaData; // then try this instead
+
+    // MAKEWORD(1,1) for Winsock 1.1, MAKEWORD(2,0) for Winsock 2.0:
+
+    if (WSAStartup(MAKEWORD(1,1), &amp;wsaData) != 0) {
+        fprintf(stderr, "WSAStartup failed.\n");
+        exit(1);
+    }</pre>
+
+
+<p>Также, вам необходимо попросить компилятор прилинковать библиотеку Winsock,
+которая часто называется <i><tt class="var">wsock32.lib</tt></i> или <i><tt class="var">winsock32.lib</tt></i>,
+или <i><tt class="var">ws2_32.lib</tt></i> для Winsock 2.0.  Под VC++, это может быть сделано через
+ меню <tt class="tt">Project</tt>, вкладка <tt class="tt">Settings...</tt>.
+Кликните вкладку <tt class="tt">Link</tt>, и посмотрите на список, озаглавленный "Object/library
+modules".  Добавьте "wsock32.lib" (выберите правильное название) в этот список.</p>
+
+<p>Вроде, так.</p>
+
+<p>Напоследок, вам необходимо вызвать <a name="indexId434909-10"></a><b><tt class="func">WSACleanup()</tt></b>, когда вы закончите работу с библиотекой сокетов. 
+Для деталей обратитесь к онлайн-справочнику.</p>
+
+<p>После выполнения этих шагов, остаток примеров в этом руководстве длжен запускаться, с небольшими исключениями.
+Например, вы не можете использовать 
+<b><tt class="func">close()</tt></b> дял закрытия - вам нужно искользовать <a name="indexId434909-11"></a><b><tt class="func">closesocket()</tt></b> вместо этого. 
+Кроме того, <a name="indexId434909-12"></a><b><tt class="func">select()</tt></b> работает только с дескрипторами сокетов, но не с 
+файловыми дескрипторами (как, к примеру <tt class="const">0</tt> для
+<tt class="tt">stdin</tt>).</p>
+
+<p>Также, есть класс-сокет, который вы можете использовать, <a name="indexId434909-13"></a><nobr><tt class="type">CSocket</tt></nobr>. Почитайте описание своего компилятора 
+для большей информации.</p>
+
+<p>Чтобы получить больше информации о Winsock, читайте <a name="indexId434909-14"></a><a href="http://tangentsoft.net/wskfaq/" target="_blank">Winsock FAQ</a> и начинайте оттуда.</p>
+
+<p>Наконец, я слышал, что у Windows нет системного вызова <a name="indexId434909-15"></a><b><tt class="func">fork()</tt></b>, который, к сожалению, 
+используется в некоторых из моих примеров. Возможно, вам стоит слинковаться с библиотекой POSIX или что-то вроде того, чтобы заставить это работать, или вы можете использовать вместо этого <a name="indexId434909-16"></a><b><tt class="func">CreateProcess()</tt></b>.
+<b><tt class="func">fork()</tt></b> не принимает аргументов, а <b><tt class="func">CreateProcess()</tt></b>
+принимает около 48 миллиардов аргументов. Если это слишком круто для вас, <a name="indexId434909-17"></a><b><tt class="func">CreateThread()</tt></b> чуть более проще понять.
+К сожалению, дискуссии о многопоточности выходят за рамки темы этого документа. А то я ведь могу долго рассказывать о ней!
+</p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.6. <a name="emailpolicy">Политика Email</a></h3>
+
+
+<p>Я, как правило, готов помочь с <a name="indexId434909-18"></a>вопросами по email, поэтому не бойтесь писать, 
+но ответ я гарантировать не могу. Я довольно занятой человек, и бывают времена, когда я просто не могу ответить на ваш вопрос. 
+В таком случае я обычно просто удаляю сообщение. Ничего личного, откровенно говоря, у меня вряд ли когда-либо будет время на то, 
+чтобы дать вам требуемый детальный ответ.</p>
+
+<p>Более того, чем сложнее кажется вопрос, тем менее вероятно, что я отвечу. 
+Если вы перечитаете ваш вопрос перед отправкой и убедитесь, что включили туда достаточно допольнительно информации для 
+меня (например, платформу, используемый компилятор, полученные сообщения об ошибке или что-то другое, что, по вашему мнению, 
+может мне помочь вникнуть в проблему), вы гораздо с большей вероятностью получите ответ. Чтобы лучше понять, как составить письмо, советую прочитать 
+документ ESR'a, <a href="http://www.catb.org/~esr/faqs/smart-questions.html" target="_blank">How To Ask
+Questions The Smart Way</a>.</p>
+
+<p>Если вы не получили ответа, постарайтесь ещё покопаться в коде и поискать ошибку, и если она всё 
+ещё не видна, напишите мне ещё одно письмо с найденной информацией, и, 
+я надеюсь, этого будет достаточно, чтобы я смог помочь.</p>
+
+<p>Теперь, после того, как я достаточно убедил вас не писать и ещё раз не писать мне, 
+я просто хочу сказать, что мне <i>очень</i> приятна похвала, полученная за все эти годы. 
+Это и есть настоящее ободрение и мне очень приятно, что то, что я сделал используется для чего-то 
+хорошего! <tt>:-)</tt>
+Спасибо!</p>
+
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.7. <a name="mirroring">Создание зеркала сайта</a></h3>
+
+
+<p><a name="indexId434909-19"></a>Я более чем приветствую создание зеркала этого сайта, неважно, публичного или приватного. 
+Если вы опубликовали зеркало публично и хотите, чтобы я повесил ссылку на главную страницу, черканите мне пару строчек на 
+<tt class="email"><a href="mailto:beej@beej.us">beej@beej.us</a></tt>.</p>
+
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.8. <a name="xlate">Nota bene для переводчиков</a></h3>
+
+
+<p><a name="indexId434909-20"></a>Если вы хотите перевести это руководство на другой язык, напишите мне на 
+ <tt class="email"><a href="mailto:beej@beej.us">beej@beej.us</a></tt> и я добавлю ссылку на ваш перевод на главную страницу. 
+ Не бойтесь указывать свои данные в заголовке перевода.</p>
+
+<p>Пожалуйста, учтите требования авторских прав и правил распространения, указанных ниже.</p>
+
+<p>Если вы хотите, чтобы перевод хранился у меня, просто попросите. Также я могу просто добавить ссылку, если 
+вы хотите хранить его у себя, оба способа вполне приемлемы.</p>
+
+
+
+
+
+
+
+
+<h3 class="sect2title">1.9. <a name="copyright">Авторские права и Распространение</a></h3>
+
+
+<p>Beej's Guide to Network Programming is Copyright &#xA9; 2012
+Brian "Beej Jorgensen" Hall.</p>
+
+<p>With specific exceptions for source code and translations, below,
+this work is licensed under the Creative Commons Attribution-
+Noncommercial- No Derivative Works 3.0 License. To view a copy of this
+license, visit <tt class="tt"><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank">http://creativecommons.org/licenses/by-nc-nd/3.0/</a></tt> or send a letter to Creative
+Commons, 171 Second Street, Suite 300, San Francisco, California, 94105,
+USA.</p>
+
+<p>One specific exception to the "No Derivative Works" portion of the
+license is as follows: this guide may be freely translated into any
+language, provided the translation is accurate, and the guide is
+reprinted in its entirety.  The same license restrictions apply to the
+translation as to the original guide.  The translation may also include
+the name and contact information for the translator.</p>
+
+<p>The C source code presented in this document is hereby granted to the
+public domain, and is completely free of any license restriction.</p>
+
+<p>Educators are freely encouraged to recommend or supply copies of this
+guide to their students.</p>
+
+<p>Contact <tt class="email"><a href="mailto:beej@beej.us">beej@beej.us</a></tt> for more information.</p>
+
+
+
+<table width="100%" border="0" cellspacing="0"cellpadding="0" class="navtable">
+<tr>
+<td align="left"><a href="index.html">&lt;&lt;&nbsp;Пред</a></td>
+<td align="center"><a href="index.html">Руководство Beej'a по Программированию Сетей</a></td><td align="right"><a href="theory.html">След&nbsp;&gt;&gt;</a></td>
+</tr></table>
+
+</body>
+</html>
