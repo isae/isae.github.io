@@ -8,47 +8,35 @@
 <body bgcolor="#ffffff">
 <table width="100%" border="0" cellspacing="0"cellpadding="0" class="navtable">
 <tr>
-<td align="left"><a href="syscalls.html">&lt;&lt;&nbsp;Prev</a></td>
-<td align="center"><a href="index.html">Beej's Guide to Network Programming</a></td><td align="right"><a href="advanced.html">Next&nbsp;&gt;&gt;</a></td>
+<td align="left"><a href="syscalls.html">&lt;&lt;&nbsp;Пред</a></td>
+<td align="center"><a href="index.html">Руководство Beej'a по Программированию Сетей</a></td><td align="right"><a href="advanced.html">След&nbsp;&gt;&gt;</a></td>
 </tr></table>
 
 
-<h2 class="sect1title">6. <a name="clientserver">Client-Server Background</a></h2><hr class="mainsecthr"/>
+<h2 class="sect1title">6. <a name="clientserver">Взаимосвязь Клиент-Сервер</a></h2><hr class="mainsecthr"/>
 
 
-<p><a name="indexId434909-132"></a>It's a client-server world, baby.  Just
-about everything on the network deals with client processes talking to
-server processes and vice-versa.  Take <b class="com">telnet</b>, for instance.
-When you connect to a remote host on port 23 with telnet (the client), a
-program on that host (called <b class="com">telnetd</b>, the server) springs to
-life.  It handles the incoming telnet connection, sets you up with a
-login prompt, etc.</p>
+<p><a name="indexId434909-132"></a>Это клиент-серверный мир, детка. Почти всё в сети работает через клиентские процессы, общающиеся с серверными и наоборот. Возьмём, к примеру, <b class="com">telnet</b>. Когда ты подсоединяешься к удалённому хосту через порт 23 по telnet
+(клиент), программа на той стороне (<b class="com">telnetd</b>, сервер) пробуждается ото сна. Она обрабатывает входящее telnet-соединение, спрашивает у тебя логин и т.д.</p>
 
 <a name="figure2" /><center>
     <div><img src="cs-120-3.334.png" alt="[Client-Server Interaction Diagram]"/></div>
 
-    <p><b>Client-Server Interaction.</b></p>
+    <p><b>Общение между Сервером и Клиентом.</b></p>
 </center>
 
 
-<p>The exchange of information between client and server is
-summarized in <a href="clientserver.html#figure2">the above diagram</a>.</p>
+<p>Обмен информацией между клиентом и сервером я схематически изобразил в <a href="clientserver.html#figure2">этой диаграмме</a>.</p>
 
-<p>Note that the client-server pair can speak
-<tt class="const">SOCK_STREAM</tt>, <tt class="const">SOCK_DGRAM</tt>, or
-anything else (as long as they're speaking the same thing.)  Some good
-examples of client-server pairs are
+<p>Учти, что пара клиент-сервер может общаться через <tt class="const">SOCK_STREAM</tt>, <tt class="const">SOCK_DGRAM</tt>, или
+через что угодно (до тех пор, пока они используют одно и то же.) Несколько хороших примеров клиент-серверных пар, это 
 <b class="com">telnet</b>/<b class="com">telnetd</b>,
-<b class="com">ftp</b>/<b class="com">ftpd</b>, or
-<b class="com">Firefox</b>/<b class="com">Apache</b>.  Every time you use
-<b class="com">ftp</b>, there's a remote program,
-<b class="com">ftpd</b>, that serves you.</p>
+<b class="com">ftp</b>/<b class="com">ftpd</b>, или
+<b class="com">Firefox</b>/<b class="com">Apache</b>.  Каждый раз, когда ты используешь
+<b class="com">ftp</b>, есть удалённая программа,
+<b class="com">ftpd</b>, которая обслуживает твои запросы.</p>
 
-<p>Often, there will only be one server on a machine, and that server
-will handle multiple clients using <a name="indexId434909-133"></a><b><tt class="func">fork()</tt></b>.  The basic routine is: server will
-wait for a connection, <b><tt class="func">accept()</tt></b> it, and <b><tt class="func">fork()</tt></b>
-a child process to handle it.  This is what our sample server does in
-the next section.</p>
+<p>Довольно часто, на машине работает только один сервер, и этот сервер обрабатывает множество клиентов, используя <a name="indexId434909-133"></a><b><tt class="func">fork()</tt></b>. Типичная последовательность действий: сервер ждёт соединения, <b><tt class="func">accept()</tt></b>ит его, и <b><tt class="func">fork()</tt></b>ается, создавая дочерний процесс, обрабатывающий это соединение. Так работает наш простой сервер, описанный в следующем разделе.</p>
 
 
 
@@ -56,21 +44,19 @@ the next section.</p>
 
 
 
-<h3 class="sect2title">6.1. <a name="simpleserver">A Simple Stream Server</a></h3>
+<h3 class="sect2title">6.1. <a name="simpleserver">Простой потоковый сервер</a></h3>
 
 
-<p><a name="indexId434909-134"></a>All this server does is send the string
-"<tt class="tt">Hello, World!\n</tt>" out over a stream connection.  All you need
-to do to test this server is run it in one window, and telnet to it from
-another with:</p>
+<p><a name="indexId434909-134"></a>Всё, что делает этот сервер - это отправляет строку
+"<tt class="tt">Hello, World!\n</tt>" через потоковое соединение. Все, что тебе нужно, чтобы протестировать этот сервер - это 
+запустить его в отдельном окне и отправить ему telnet - запрос из другого вот так:</p>
 
 <pre class="screen">$ telnet remotehostname 3490</pre>
 
 
-<p>where <tt class="tt">remotehostname</tt> is the name of the machine you're
-running it on.</p>
+<p>where <tt class="tt">remotehostname</tt> - это имя компьютера, на которой ты в данный момент запускаешь всё это.</p>
 
-<p><a href="http://beej.us/guide/bgnet/examples/server.c" target="_blank">The server code</a>:</p>
+<p><a href="http://beej.us/guide/bgnet/examples/server.c" target="_blank">Код сервера</a>:</p>
 
 <pre class="code">/*
 ** server.c -- a stream socket server demo
@@ -201,38 +187,26 @@ int main(void)
 }</pre>
 
 
-<p>In case you're curious, I have the code in one big
-<b><tt class="func">main()</tt></b> function for (I feel) syntactic clarity.
-Feel free to split it into smaller functions if it makes you feel
-better.</p>
+<p>Если тебе интересно, я положил весь код в одну большую функцию <b><tt class="func">main()</tt></b>, чтобы это всё (как мне кажется) 
+выглядело синтаксически чисто. Ты можешь разделить функционал на функции поменьше, если тебе так удобнее.</p>
 
-<p>(Also, this whole <a name="indexId434909-135"></a><b><tt class="func">sigaction()</tt></b>
-thing might be new to you—that's ok.  The code that's there is
-responsible for reaping <a name="indexId434909-136"></a>zombie processes that
-appear as the <b><tt class="func">fork()</tt></b>ed child processes exit.  If you make
-lots of zombies and don't reap them, your system administrator will
-become agitated.)</p>
+<p>(Также, функция <a name="indexId434909-135"></a><b><tt class="func">sigaction()</tt></b>
+может быть нова для тебя - это норма. Вышеописанный код убивает <a name="indexId434909-136"></a>процессы-зомби, которые появляются после 
+завершения <b><tt class="func">fork()</tt></b>нутого дочернего процесса. Если ты насоздаёшь много зомби и не убьёшь их, это заставит системного администратора поволноваться.)</p>
 
-<p>You can get the data from this server by using the client
-listed in the next section.</p>
+<p>Ты можешь получить данные из этого сервера используя клиент, описанный в следующем разделе.</p>
 
 
 
 
 
+<h3 class="sect2title">6.2. <a name="simpleclient">Простой потоковый клиент</a></h3>
 
 
+<p><a name="indexId434909-137"></a>Этот парень ещё проще, чем сервер. Всё, что делает клиент - это соединяется с хостом, заданным 
+через консоль, порт 3490 и получает строку, которую ему отправляет сервер.</p>
 
-
-<h3 class="sect2title">6.2. <a name="simpleclient">A Simple Stream Client</a></h3>
-
-
-<p><a name="indexId434909-137"></a>This guy's even easier than the server.  All
-this client does is connect to the host you specify on the command line,
-port 3490.  It gets the string that the server sends.</p>
-
-<p><a href="http://beej.us/guide/bgnet/examples/client.c" target="_blank">The client
-source</a>:</p>
+<p><a href="http://beej.us/guide/bgnet/examples/client.c" target="_blank">Исходник клиента</a>:</p>
 
 <pre class="code">/*
 ** client.c -- a stream socket client demo
@@ -329,10 +303,8 @@ int main(int argc, char *argv[])
 }</pre>
 
 
-<p>Notice that if you don't run the server before you run the client,
-<b><tt class="func">connect()</tt></b> returns
-<a name="indexId434909-138"></a>"Connection refused".  Very
-useful.</p>
+<p>Обрати внимание, что если ты запустишь клиент до запуска сервера, <b><tt class="func">connect()</tt></b> вернёт
+<a name="indexId434909-138"></a>"Connection refused". Это весьма полезно.</p>
 
 
 
@@ -342,21 +314,18 @@ useful.</p>
 
 
 
-<h3 class="sect2title">6.3. <a name="datagram">Datagram Sockets</a></h3>
+<h3 class="sect2title">6.3. <a name="datagram">Датаграм-сокеты</a></h3>
 
 
-<p>We've already covered the basics of UDP datagram sockets with our
-discussion of <b><tt class="func">sendto()</tt></b> and <b><tt class="func">recvfrom()</tt></b>, above,
-so I'll just present a couple of sample programs: <i><tt class="var">talker.c</tt></i>
-and <i><tt class="var">listener.c</tt></i>.</p>
+<p>Мы уже рассмотрели основы UDP-датаграм сокетов, когда обсуждали 
+ <b><tt class="func">sendto()</tt></b> и <b><tt class="func">recvfrom()</tt></b> выше, поэтому я просто покажу парочку простых программ:
+ <i><tt class="var">talker.c</tt></i>
+и <i><tt class="var">listener.c</tt></i>.</p>
 
-<p><a name="indexId434909-139"></a><b class="com">listener</b> sits on a machine
-waiting for an incoming packet on port 4950.  <b class="com">talker</b> sends a
-packet to that port, on the specified machine, that contains whatever
-the user enters on the command line.</p>
+<p><a name="indexId434909-139"></a><b class="com">listener</b> висит на машине и ожидает входящих пакетов на порту 4950.
+ <b class="com">talker</b> отправляет пакет на этот порт, на определённую машину, содержащий то, что пользователь ввёл в командной строке.</p>
 
-<p>Here is the <a href="http://beej.us/guide/bgnet/examples/listener.c" target="_blank">source for
-<i><tt class="var">listener.c</tt></i></a>:</p>
+<p>Вот <a href="http://beej.us/guide/bgnet/examples/listener.c" target="_blank">исходник <i><tt class="var">listener.c</tt></i></a>:</p>
 
 <pre class="code">/*
 ** listener.c -- a datagram sockets "server" demo
@@ -455,12 +424,10 @@ int main(void)
 }</pre>
 
 
-<p>Notice that in our call to <b><tt class="func">getaddrinfo()</tt></b> we're finally
-using <tt class="const">SOCK_DGRAM</tt>.  Also, note that there's no need to
-<b><tt class="func">listen()</tt></b> or <b><tt class="func">accept()</tt></b>.  This is one of the
-perks of using unconnected datagram sockets!</p>
+<p>Обрати внимание, что в нашем вызове <b><tt class="func">getaddrinfo()</tt></b> мы используем <tt class="const">SOCK_DGRAM</tt>. 
+Также, заметь, что нет нужды вызывать <b><tt class="func">listen()</tt></b> или <b><tt class="func">accept()</tt></b>. Это одно из удобств использования датаграм-сокетов без соединения!</p>
 
-<p><a name="indexId434909-140"></a>Next comes the <a href="http://beej.us/guide/bgnet/examples/talker.c" target="_blank">source for <i><tt class="var">talker.c</tt></i></a>:</p>
+<p><a name="indexId434909-140"></a>Теперь пришло время <a href="http://beej.us/guide/bgnet/examples/talker.c" target="_blank">исходника <i><tt class="var">talker.c</tt></i></a>:</p>
 
 
 <pre class="code">/*
@@ -533,32 +500,24 @@ int main(int argc, char *argv[])
 
 
 
-<p>And that's all there is to it!  Run <b class="com">listener</b> on some
-machine, then run <b class="com">talker</b> on another.  Watch them communicate!
-Fun G-rated excitement for the entire nuclear family!</p>
+<p>Вот и всё! Запусти <b class="com">listener</b> на одной машине, затем запусти <b class="com">talker</b> на другой и смотри, как 
+они общаются! Развлечение для всех возрастов!</p>
 
-<p>You don't even have to run the server this time!  You can run
-<b class="com">talker</b> by itself, and it just happily fires packets off into
-the ether where they disappear if no one is ready with a
-<b><tt class="func">recvfrom()</tt></b> on the other side.  Remember: data sent using
-UDP datagram sockets isn't guaranteed to arrive!</p>
+<p>В этот раз тебе даже не нужно запускать сервер! Можешь запустить <b class="com">talker</b>а самого по себе, и он будет беззаботно 
+отсылать пакеты в никуда, где они будут исчезать, пока на той стороне не вызовут 
+<b><tt class="func">recvfrom()</tt></b>. Но помни: данные, посланные через UDP, могут не дойти!</p>
 
-<p>Except for one more tiny detail that I've mentioned many times in the
-past: <a name="indexId434909-141"></a>connected datagram
-sockets.  I need to talk about this here, since we're in the datagram
-section of the document.  Let's say that <b class="com">talker</b> calls
-<b><tt class="func">connect()</tt></b> and specifies the <b class="com">listener</b>'s address.
-From that point on, <b class="com">talker</b> may only sent to and receive from
-the address specified by <b><tt class="func">connect()</tt></b>.  For this reason, you
-don't have to use <b><tt class="func">sendto()</tt></b> and <b><tt class="func">recvfrom()</tt></b>; you
-can simply use <b><tt class="func">send()</tt></b> and <b><tt class="func">recv()</tt></b>.</p>
+<p>Если конечно ты не используешь одну маленькую деталь, которую я не раз упоминал в прошлом: <a name="indexId434909-141"></a> датаграм - 
+сокеты с соединением. Нужно поговорить об этом, раз уж речь зашла о датаграм-сокетах. Пусть, скажем, <b class="com">talker</b> вызовет
+<b><tt class="func">connect()</tt></b> и даст на вход адрес <b class="com">listener</b>'а.
+После этого, <b class="com">talker</b> может отсылать и принимать данные исключительно по адресу, заданному в <b><tt class="func">connect()</tt></b>. По этой причине, тебе не обязательно использовать <b><tt class="func">sendto()</tt></b> и <b><tt class="func">recvfrom()</tt></b>; ты можешь просто использовать <b><tt class="func">send()</tt></b> и <b><tt class="func">recv()</tt></b>.</p>
 
 
 
 <table width="100%" border="0" cellspacing="0"cellpadding="0" class="navtable">
 <tr>
-<td align="left"><a href="syscalls.html">&lt;&lt;&nbsp;Prev</a></td>
-<td align="center"><a href="index.html">Beej's Guide to Network Programming</a></td><td align="right"><a href="advanced.html">Next&nbsp;&gt;&gt;</a></td>
+<td align="left"><a href="syscalls.html">&lt;&lt;&nbsp;Пред</a></td>
+<td align="center"><a href="index.html">Руководство Beej'a по Программированию Сетей</a></td><td align="right"><a href="advanced.html">След&nbsp;&gt;&gt;</a></td>
 </tr></table>
 
 </body>
