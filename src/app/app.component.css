@@ -1,0 +1,43 @@
+.centerDiv {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  z-index: 15;
+  top: 50%;
+  left: 25%;
+  margin: -300px 0 0 -300px;
+  background: none;
+  border: 4px dotted black;
+}
+
+.centerPhoto {
+  position: absolute;
+  border: 4px dotted red;
+  margin: -25px 0 0 125px;
+}
+
+.aboutButton {
+  position: absolute;
+  border: 4px dotted red;
+  margin: 0 0 0 265px;
+}
+
+.diyButton {
+  position: absolute;
+  border: 4px dotted red;
+  margin: 0 0 0 0;
+
+}
+
+.travelButton {
+  position: absolute;
+  border: 4px dotted red;
+  margin: 0 0 0 0;
+
+}
+
+.otherButton {
+  position: absolute;
+  border: 4px dotted red;
+  margin: 333px 0 0 287px;
+}
